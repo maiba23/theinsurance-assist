@@ -47,7 +47,7 @@ const HomeHero = () => {
                 </div>
               </Link>
               <Link
-                to="/get-policy"
+                to="/get-review"
                 className="button button-large bg-primary-4 review_btn space-left w-inline-block"
                 onClick={() =>
                   ReactPixel.fbq("trackCustom", "SubmitApplication")

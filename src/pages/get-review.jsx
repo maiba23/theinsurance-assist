@@ -1,11 +1,11 @@
-import React, { useCallback, useReducer } from "react";
+import React, { useCallback, useReducer, useState } from "react";
 import Layout from "../Layout";
 import SectionContainer from "../Layout/SectionContainer";
 import FormContainer from "../Layout/FormContainer";
 import {
   FormInput,
+  FormRadio,
   FormSelect,
-  FormTextarea,
 } from "../components/shared/FormControl";
 import { Link } from "react-router-dom";
 import { IconCalendar } from "../utils/imgLoader";
@@ -23,7 +23,22 @@ const states = {
   AQ: "Antarctica",
 };
 
+const radioValues = [
+  {
+    value: "Yes",
+    name: "Yes",
+  },
+  {
+    value: "No",
+    name: "No",
+  },
+  {
+    value: "I'm not sure",
+    name: "I'm not sure",
+  },
+];
 const GetPolicy = () => {
+  const [selectedOption, setOption] = useState("Yes");
   const [state, setState] = useReducer(
     (old, action) => ({ ...old, ...action }),
     {
@@ -36,7 +51,6 @@ const GetPolicy = () => {
       zipcode: "",
       city: "",
       cstate: "",
-      question: "",
     }
   );
 
@@ -50,30 +64,33 @@ const GetPolicy = () => {
     zipcode,
     city,
     cstate,
-    question,
   } = state;
 
   const profileChanged = useCallback((e) => {
     e.preventDefault();
     setState({ [e.target.name]: e.target.value });
   }, []);
-
+  const radioChanged = (e) => {
+    setOption(e.target.value);
+  };
   return (
     <Layout>
-      <SectionContainer>
+      <SectionContainer clsName="bg-blue">
         <div className="content-width-extra-large page-title about-title">
-          <h2 data-aos="zoom-in">Permanent life insurance</h2>
+          <h2 className="custom-heading" data-aos="zoom-in">
+            The easiest way to review your insurance policies is to talk to an
+            agent.
+          </h2>
           <div className="large-text" data-aos="zoom-in">
-            Permanent life insurance covers you for the rest of your life and
-            pays out regardless of when you die, as long as you've paid your
-            premiums. To find the best policy to fit your needs, we advise you
-            to get in touch with an experienced professional.
-            <br /> Please provide us a little bit of information about yourself
-            and schedule an online meeting.
+            Let's get you together with an experienced professional.
+            <br />
+            Just provide us a little bit of information about yourself and
+            schedule an online meeting.
           </div>
         </div>
-        <form className="form">
-          <FormContainer labelName="What’s your name?">
+        <form className="form" data-aos="flip-up">
+          <FormContainer clsName="review">
+            <label className="form-label">What’s your name?</label>
             <FormInput
               type="text"
               name="firstname"
@@ -88,11 +105,7 @@ const GetPolicy = () => {
               onChange={profileChanged}
               placeholder="Last Name"
             />
-            <span className="gray">
-              Please use your full legal as it appears on your driver's license
-            </span>
-          </FormContainer>
-          <FormContainer labelName="Your contact details">
+            <label className="form-label">Your contact details</label>
             <FormInput
               type="tel"
               name="phone"
@@ -107,8 +120,7 @@ const GetPolicy = () => {
               onChange={profileChanged}
               placeholder="Email address"
             />
-          </FormContainer>
-          <FormContainer labelName="Where do you live?">
+            <label className="form-label">Where do you live?</label>
             <FormInput
               type="text"
               name="address"
@@ -147,19 +159,20 @@ const GetPolicy = () => {
               onChange={profileChanged}
               placeholder="State"
             />
-          </FormContainer>
-          <FormContainer labelName="Your contact details">
-            <FormTextarea
-              type="text"
-              name="question"
-              value={question}
-              onChange={profileChanged}
-              placeholder="Write your message here..."
-            />
+            <label className="form-label">Do you have life insurance?</label>
+            {radioValues.map((item, idx) => (
+              <FormRadio
+                key={idx}
+                value={item.value}
+                name={item.name}
+                checked={selectedOption === item.value}
+                onChange={radioChanged}
+              />
+            ))}
           </FormContainer>
           <div className="schedule-meeting">
             <Link to="/book" className="btn-meeting">
-              <img src={IconCalendar} alt="calendar icon" />
+              <img src={IconCalendar} alt="calendear icon" />
               <p>Schedule a meeting</p>
             </Link>
           </div>

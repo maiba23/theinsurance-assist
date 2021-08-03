@@ -13,6 +13,7 @@ const Contact = lazy(() => import("./pages/contact"));
 const Terms = lazy(() => import("./pages/terms"));
 const Book = lazy(() => import("./pages/book"));
 const GetPolicy = lazy(() => import("./pages/get-policy"));
+const GetReview = lazy(() => import("./pages/get-review"));
 const NotFound = lazy(() => import("./pages/404"));
 
 function App() {
@@ -38,6 +39,7 @@ function App() {
             <Route path="/terms" component={Terms} />
             <Route path="/book" component={Book} />
             <Route path="/get-policy" component={GetPolicy} />
+            <Route path="/get-review" component={GetReview} />
             <Route path="*" component={NotFound} />
           </Switch>
         </Suspense>

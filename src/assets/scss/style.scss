@@ -194,7 +194,10 @@ $breakpoints: (
     @include mq("phone-wide", max) {
       padding: 20px 40px;
     }
-    input,
+    &.review {
+      background-color: white;
+    }
+    .form-input,
     select,
     textarea {
       width: 100%;
@@ -234,6 +237,7 @@ $breakpoints: (
 
 .dflex {
   display: flex;
+  align-items: center;
   input {
     &:first-child {
       margin-right: 24px;
@@ -264,4 +268,23 @@ $breakpoints: (
   p {
     margin-left: 15px;
   }
+}
+
+.custom-heading {
+  color: #0d3f5e;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 36px;
+  max-width: 683px;
+}
+
+.bg-blue {
+  background-color: #f3f6f7 !important;
+}
+
+.mb-0 {
+  margin-bottom: 0 !important;
+}
+.mb-10 {
+  margin-bottom: 10px;
 }

@@ -1,6 +1,6 @@
 export const FormInput = (props) => {
   const { ...others } = props;
-  return <input {...others} />;
+  return <input className="form-input" {...others} />;
 };
 
 export const FormTextarea = (props) => {
@@ -18,5 +18,15 @@ export const FormSelect = (props) => {
         </option>
       ))}
     </select>
+  );
+};
+
+export const FormRadio = (props) => {
+  const { name, ...others } = props;
+  return (
+    <div className="dflex mb-10">
+      <input type="radio" {...others} />
+      <label className="mb-0">{name}</label>
+    </div>
   );
 };
