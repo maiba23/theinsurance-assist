@@ -1,26 +1,27 @@
 import Layout from "../Layout";
 import ContactForm from "../components/contact/ContactForm";
-import HeroContent from "../components/shared/HeroContent";
 import { ImgContact } from "../utils/imgLoader";
 
 const Contact = () => {
   return (
     <Layout>
-      <HeroContent
-        clsName="bg-gray-1"
-        title="Let us contact you."
-        content="Enter your details below and we&#x27;ll get back to you shortly:"
-        animation="fade-up"
-        delay1="400"
-        delay2="500"
-      />
-      <ContactForm />
-      <div className="hero_img space-top space-bottom" data-aos="zoom-out">
-        <img
-          src={ImgContact}
-          alt="Contact us illustration"
-          className="animate-in-fourth"
-        />
+      <div className="bg-blue">
+        <div className="content-width-extra-large page-title about-title contact-layout">
+          <h2 className="custom-heading" data-aos="zoom-in">
+            Let us contact you.
+          </h2>
+          <div className="large-text" data-aos="zoom-in">
+            Enter your details below and we'll get back to you shortly:
+          </div>
+        </div>
+        <ContactForm />
+        <div className="hero_img space-top space-bottom" data-aos="zoom-out">
+          <img
+            src={ImgContact}
+            alt="Contact us illustration"
+            className="animate-in-fourth"
+          />
+        </div>
       </div>
     </Layout>
   );

@@ -208,6 +208,8 @@ $breakpoints: (
       padding: 12px 16px;
       margin-bottom: 24px;
       font-family: sans-serif;
+      resize: none;
+
       &:focus {
         border: 2px solid #3d4643 !important;
         outline: none;
@@ -265,8 +267,17 @@ $breakpoints: (
   @include mq("phone-wide", max) {
     width: 100%;
   }
-  p {
-    margin-left: 15px;
+  img {
+    margin-right: 15px;
+  }
+  &:disabled {
+    border: 1px solid #888;
+    background-color: #888;
+
+    &:hover {
+      border: 1px solid #888;
+      background-color: #888;
+    }
   }
 }
 
@@ -287,4 +298,112 @@ $breakpoints: (
 }
 .mb-10 {
   margin-bottom: 10px;
+}
+.contact-layout {
+  padding-top: 50px;
+  padding-bottom: 60px;
+}
+
+.error-msg {
+  padding: 0 16px;
+  font-weight: 400;
+  font-size: 12px;
+  color: red;
+  text-align: center;
+  width: 100%;
+  margin: 8px;
+  text-transform: uppercase;
+}
+
+.click-here {
+  color: #008eb1;
+  text-decoration: underline;
+  line-height: 30px;
+}
+
+.btn-group {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.toggle-btn {
+  padding: 12px 0;
+  width: 50%;
+  background-color: white;
+  color: #869ea4;
+  font-size: 16px;
+  text-align: center;
+  line-height: 24px;
+  font-weight: 400;
+  border: 1px solid #96aaaf;
+  &:first-child {
+    border-radius: 6px 0px 0px 6px;
+  }
+  &:last-child {
+    border-radius: 0px 6px 6px 0px;
+  }
+  &.active {
+    transition: all 0.2s ease;
+    background: #0d3f5e;
+    color: white;
+  }
+}
+
+.react-datepicker__input-container {
+  margin-bottom: 24px;
+  input {
+    background: #ffffff;
+    border: 1px solid #cccccc;
+    box-sizing: border-box;
+    border-radius: 6px;
+    width: 100%;
+    padding: 12px 0 12px 16px;
+    font-size: 16px;
+    line-height: 24px;
+    color: #141414;
+  }
+}
+
+.d-flex {
+  display: flex;
+}
+
+.right-part {
+  max-width: 400px;
+  margin: 70px 50px;
+}
+
+.like-me {
+  font-size: 16px;
+  line-height: 24px;
+  border: 1px solid #cccccc;
+  box-sizing: border-box;
+  border-radius: 100px;
+  margin: 0 0px 16px;
+  padding: 13px 26px;
+}
+
+.question {
+  font-size: 18px;
+}
+
+.answers {
+  margin-left: 30px;
+  .answer {
+    font-weight: bold;
+  }
+}
+
+.show-cost {
+  font-weight: normal;
+  font-size: 27px;
+  line-height: 30px;
+  color: #008eb1;
+}
+
+.step-show {
+  color: #898989;
+  font-size: 18px;
+  line-height: 30px;
 }

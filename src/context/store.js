@@ -1,9 +1,14 @@
 import { createContext, useContext, useReducer } from "react";
 import { reducer } from "./reducer";
+const moment = require("moment-timezone");
 
 const date = new Date();
+const tzName = moment.tz.guess();
+
 const tz = {
   altName: date.toTimeString().slice(9),
+  value: tzName,
+  offset: "",
 };
 
 const initialState = {
@@ -11,6 +16,7 @@ const initialState = {
   bookTime: "",
   timeZone: tz,
   confirmStatus: false,
+  user_id: "",
 };
 
 export const store = createContext(initialState);

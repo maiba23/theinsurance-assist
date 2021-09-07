@@ -34,6 +34,18 @@ export const formatDate = (date) => {
   return [year, month, day].join("-");
 };
 
+export const getTimeSlot = (date) => {
+  let timeString = new Date(date);
+
+  const hour = timeString.getHours();
+  const mins = timeString.getMinutes();
+  const secs = timeString.getSeconds();
+
+  return `${hour > 9 ? hour : "0" + hour}:${mins > 9 ? mins : "0" + mins}:${
+    secs > 9 ? secs : "0" + secs
+  }`;
+};
+
 export const convertDate = (date) => {
   const [week, month, day, year] = [
     dayNames[date.getDay()],
@@ -42,6 +54,23 @@ export const convertDate = (date) => {
     date.getFullYear(),
   ];
   return week + ", " + month + " " + day + ", " + year;
+};
+export const getOffset = (timeZone = "UTC", date = new Date()) => {
+  const utcDate = new Date(date.toLocaleString("en-US", { timeZone: "UTC" }));
+  const tzDate = new Date(date.toLocaleString("en-US", { timeZone }));
+  return (tzDate.getTime() - utcDate.getTime()) / 6e4 / 60;
+};
+
+export const convertTZ = (date, tzString) => {
+  return date.toLocaleString("en-US", {
+    timeZone: tzString,
+    hour12: false,
+  });
+};
+
+export const getTZOffest = (secs) => {
+  const hhmm = new Date(Math.abs(secs) * 1000).toISOString().substr(11, 5);
+  return secs < 0 ? "-" + hhmm : "+" + hhmm;
 };
 
 export const addMinutes = (time, minsToAdd) => {
@@ -138,4 +167,35 @@ export const customSelect = () => {
   /*if the user clicks anywhere outside the select box,
 then close all select boxes:*/
   document.addEventListener("click", closeAllSelect);
+};
+
+export const toIsoString = (date) => {
+  var tzo = -date.getTimezoneOffset(),
+    dif = tzo >= 0 ? "+" : "-",
+    pad = function (num) {
+      var norm = Math.floor(Math.abs(num));
+      return (norm < 10 ? "0" : "") + norm;
+    };
+
+  return (
+    date.getFullYear() +
+    "-" +
+    pad(date.getMonth() + 1) +
+    "-" +
+    pad(date.getDate()) +
+    "T" +
+    pad(date.getHours()) +
+    ":" +
+    pad(date.getMinutes()) +
+    ":" +
+    pad(date.getSeconds()) +
+    dif +
+    pad(tzo / 60) +
+    ":" +
+    pad(tzo % 60)
+  );
+};
+
+export const numberWithCommas = (x) => {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };

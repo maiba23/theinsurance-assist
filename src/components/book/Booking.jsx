@@ -1,13 +1,19 @@
-import { useEffect } from "react";
 import { Calendar } from "react-rainbow-components";
 import TimezoneSelect from "react-timezone-select";
 import TimePicker from "./TimePicker";
-import { formatDate } from "../../utils";
+import { convertTZ, formatDate, getTimeSlot } from "../../utils";
 import { useDispatch, useSelector } from "../../context/store";
 import * as Actions from "../../context/actions";
 import Loader from "react-loader-spinner";
+import { useEffect } from "react";
+import { useState } from "react";
 
 const Booking = ({ timeSlots, loading }) => {
+  const [slots, setSlots] = useState();
+  useEffect(() => {
+    setSlots(timeSlots);
+  }, [timeSlots]);
+
   const dispatch = useDispatch();
   const bookDate = useSelector((state) => state.bookDate);
   const timeZone = useSelector((state) => state.timeZone);
@@ -21,10 +27,40 @@ const Booking = ({ timeSlots, loading }) => {
     (item) => item === formatDate(bookDate)
   );
   const nextYear = new Date().getFullYear() + 1;
+
   useEffect(() => {
-    document.getElementsByClassName("css-1wa3eu0-placeholder")[0].innerHTML =
-      timeZone.altName;
-  }, []);
+    const newTimeSlots = {};
+    Object.keys(timeSlots).map((date) => {
+      Object.keys(timeSlots[date]).map((timeslot) => {
+        const newDate = new Date(`${date} ${timeslot}`);
+
+        const newUTCDate = new Date(
+          Date.UTC(
+            newDate.getFullYear(),
+            newDate.getMonth(),
+            newDate.getDate(),
+            newDate.getHours(),
+            newDate.getMinutes(),
+            newDate.getSeconds()
+          )
+        );
+        const dateKey = formatDate(
+          convertTZ(newUTCDate, timeZone.value || timeZone)
+        );
+        const timeSlotKey = getTimeSlot(
+          convertTZ(newUTCDate, timeZone.value || timeZone)
+        );
+        newTimeSlots[dateKey] = {
+          ...(newTimeSlots[dateKey] ? newTimeSlots[dateKey] : {}),
+        };
+        newTimeSlots[dateKey][timeSlotKey] = true;
+        return "";
+      });
+      return "";
+    });
+    setSlots({ ...newTimeSlots });
+  }, [timeZone, timeSlots]);
+
   return (
     <div className="_1Bm6brdqaB _1qz0a4uwN4">
       <div
@@ -69,24 +105,26 @@ const Booking = ({ timeSlots, loading }) => {
               data-component="spotpicker-times-list"
               className="_31OiCICiBy _2BAWsZzdsR _2zxA_-5OZU"
             >
-              <div data-component="spot-list" className="_2YFzZKJ3S2">
-                {timeSlots[selectedDate] === undefined ||
-                Object.keys(timeSlots[selectedDate]).length === 0 ? (
-                  <div>
-                    <strong>No Time Slots</strong>
-                  </div>
-                ) : (
-                  <TimePicker slots={timeSlots[selectedDate]} />
-                )}
-                {loading && (
-                  <Loader
-                    type="TailSpin"
-                    color="rgba(1,182,245,1)"
-                    height={45}
-                    width={45}
-                  />
-                )}
-              </div>
+              {slots && (
+                <div data-component="spot-list" className="_2YFzZKJ3S2">
+                  {slots[selectedDate] === undefined ||
+                  Object.keys(slots[selectedDate]).length === 0 ? (
+                    <div>
+                      <strong>No Time Slots</strong>
+                    </div>
+                  ) : (
+                    <TimePicker slots={slots[selectedDate]} />
+                  )}
+                  {loading && (
+                    <Loader
+                      type="TailSpin"
+                      color="rgba(1,182,245,1)"
+                      height={45}
+                      width={45}
+                    />
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>

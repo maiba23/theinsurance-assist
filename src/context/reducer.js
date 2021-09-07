@@ -28,6 +28,11 @@ export const reducer = (state, action) => {
         ...state,
         confirmStatus: action.payload,
       };
+    case ActionTypes.SET_USER_ID:
+      return {
+        ...state,
+        user_id: action.payload,
+      };
     default:
       return state;
   }

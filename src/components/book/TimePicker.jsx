@@ -1,6 +1,27 @@
 import { useCallback, useState } from "react";
-import { useDispatch } from "../../context/store";
+import { useDispatch, useSelector } from "../../context/store";
 import * as Actions from "../../context/actions";
+import axios from "axios";
+import { formatDate, getTZOffest } from "../../utils";
+import ReactPixel from "react-facebook-pixel";
+
+// Date.prototype.toCustomString = function () {
+//   const offset = -this.getTimezoneOffset();
+//   console.log("timzoneoffest", offset);
+//   const hour = `${Math.floor(offset / 60)}`;
+//   const mins = `${offset % 60}`;
+//   if (hour > 0) {
+//     return `${this.toISOString().split(".")[0]}+${hour.padStart(
+//       2,
+//       "0"
+//     )}:${mins.padStart(2, "0")}`;
+//   } else {
+//     return `${this.toISOString().split(".")[0]}${hour.padStart(
+//       2,
+//       "0"
+//     )}:${mins.padStart(2, "0")}`;
+//   }
+// };
 
 const TimeSpot = ({
   id,
@@ -10,10 +31,38 @@ const TimeSpot = ({
   onConfirmClick,
 }) => {
   const dispatch = useDispatch();
-  const handleClick = (item) => {
-    dispatch(Actions.setBookTime(item));
-    onConfirmClick();
-  };
+  const user_id = useSelector((state) => state.user_id);
+  const timeZone = useSelector((state) => state.timeZone);
+  const bookDate = useSelector((state) => state.bookDate);
+  const endPoint =
+    process.env.REACT_APP_BOOKING_SERVER_URL + "/appointment/set/" + user_id;
+
+  const handleClick = useCallback(
+    (item) => {
+      ReactPixel.fbq("trackCustom", "CompleteRegistration");
+      dispatch(Actions.setBookTime(item.slice(0, 5)));
+      onConfirmClick();
+      // const dd = new Date(`${formatDate(bookDate)} ${item}`).toCustomString();
+
+      // console.log(timeZone);
+
+      const startTime =
+        formatDate(bookDate) +
+        "T" +
+        item +
+        getTZOffest(timeZone?.offset * 3600);
+
+      // console.log(startTime);
+
+      const params = {
+        start_time: startTime,
+        timezone: timeZone?.value || timeZone,
+      };
+      axios.post(endPoint, params).then((res) => console.log(res.data, params));
+    },
+    [dispatch, bookDate, timeZone, endPoint, onConfirmClick]
+  );
+
   return (
     <div
       className="Jqp9X3YjPb"
@@ -30,10 +79,10 @@ const TimeSpot = ({
         }
         aria-describedby="tooltip-2349a"
         type="button"
-        onClick={useCallback(() => handleSelectSpot(id), [
-          id,
-          handleSelectSpot,
-        ])}
+        onClick={useCallback(
+          () => handleSelectSpot(id),
+          [id, handleSelectSpot]
+        )}
       >
         <div
           className={
@@ -53,7 +102,7 @@ const TimeSpot = ({
         }
         aria-describedby="tooltip-f73ef"
         type="button"
-        onClick={() => handleClick(target.slice(0, 5))}
+        onClick={() => handleClick(target)}
       >
         Confirm
       </button>

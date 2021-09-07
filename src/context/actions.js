@@ -3,6 +3,7 @@ import {
   SET_TIME_INFO,
   SET_TIMEJONE_INFO,
   SET_CONFIRM_STATUS,
+  SET_USER_ID,
 } from "./constants";
 
 export const setBookDate = (info) => ({
@@ -22,5 +23,10 @@ export const setTimezone = (info) => ({
 
 export const setConfirm = (info) => ({
   type: SET_CONFIRM_STATUS,
+  payload: info,
+});
+
+export const setUserId = (info) => ({
+  type: SET_USER_ID,
   payload: info,
 });

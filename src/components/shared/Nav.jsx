@@ -22,9 +22,6 @@ const NavComponent = ({ navMenuClsName }) => (
     <Link to="/contact" className="nav-menu-link">
       Contact
     </Link>
-    <Link to="/book" className="nav-menu-link">
-      Book
-    </Link>
   </nav>
 );
 

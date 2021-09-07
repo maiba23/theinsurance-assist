@@ -1,28 +1,23 @@
-import React, { useCallback, useReducer, useState } from "react";
+import axios from "axios";
+import React, { useCallback, useReducer, useState, useEffect } from "react";
 import Layout from "../Layout";
 import SectionContainer from "../Layout/SectionContainer";
 import FormContainer from "../Layout/FormContainer";
+import validator from "validator";
 import {
   FormInput,
   FormRadio,
-  FormSelect,
+  Input,
+  Button,
 } from "../components/shared/FormControl";
-import { Link } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { IconCalendar } from "../utils/imgLoader";
+import states from "../utils/states.json";
+import { useDispatch } from "../context/store";
+import * as Actions from "../context/actions";
+import ReactPixel from "react-facebook-pixel";
 
-const states = {
-  AA: "State",
-  AF: "Afghanistan",
-  AX: "Åland Islands",
-  AL: "Albania",
-  DZ: "Algeria",
-  AS: "American Samoa",
-  AD: "Andorra",
-  AO: "Angola",
-  AI: "Anguilla",
-  AQ: "Antarctica",
-};
-
+const endPoint = process.env.REACT_APP_USERS_SERVER_URL + "user/add";
 const radioValues = [
   {
     value: "Yes",
@@ -38,6 +33,11 @@ const radioValues = [
   },
 ];
 const GetPolicy = () => {
+  let history = useHistory();
+  const dispatch = useDispatch();
+  const setUser = (user_id) => {
+    dispatch(Actions.setUserId(user_id));
+  };
   const [selectedOption, setOption] = useState("Yes");
   const [state, setState] = useReducer(
     (old, action) => ({ ...old, ...action }),
@@ -45,34 +45,107 @@ const GetPolicy = () => {
       firstname: "",
       lastname: "",
       phone: "",
-      email: "",
-      address: "",
-      apt: "",
+      email: { value: "", error: "" },
       zipcode: "",
       city: "",
       cstate: "",
+      error: "",
     }
   );
 
-  const {
-    firstname,
-    lastname,
-    phone,
-    email,
-    address,
-    apt,
-    zipcode,
-    city,
-    cstate,
-  } = state;
+  const { firstname, lastname, phone, email, zipcode, city, cstate, error } =
+    state;
 
+  const handleEmailChange = useCallback((e) => {
+    setState({
+      email: {
+        value: e.target.value,
+        error: validator.isEmail(e.target.value) ? "" : "invalid email address",
+      },
+    });
+  }, []);
+
+  useEffect(() => {
+    dispatch(Actions.setConfirm(false));
+
+    const fetch = async () => {
+      const endPoint = "https://ipinfo.io/json";
+      const token = "74fd336dab8d88";
+
+      try {
+        const res = await axios.get(endPoint, { params: { token } });
+
+        const country = Object.keys(states)
+          .filter((key) => key === res.data?.country)
+          .reduce((obj, key) => {
+            obj[key] = states[key];
+            return obj[key];
+          }, {});
+        console.log(res.data);
+        setState({
+          zipcode: res.data?.postal,
+          city: res.data?.city,
+          cstate: country,
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetch();
+  }, [dispatch]);
   const profileChanged = useCallback((e) => {
     e.preventDefault();
     setState({ [e.target.name]: e.target.value });
   }, []);
+
   const radioChanged = (e) => {
     setOption(e.target.value);
   };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    ReactPixel.fbq("trackCustom", "Schedule");
+    const params = {
+      source: "Star Website Form",
+      subject: "test",
+      existing_li_id: "Other",
+      referrer: "Yellow",
+      gender: "male",
+      password:
+        "6d1e785fd1409bb21de1f617a3d19e4857b26b64a28177d8b81b018158b3cd80",
+      dob: "09-02-1995",
+      annual_income: 250000,
+      selected_product: "Whole Life",
+      coverage: 10000,
+      affiliate_id: "7",
+      status: "Potential",
+      policy_type_purchase: "test",
+      date_of_purchase: "05-05-2020",
+      first_name: firstname,
+      last_name: lastname,
+      full_name: firstname + " " + lastname,
+      email: email.value,
+      phone_number: phone,
+      street_address_one: "Ben Gurion Rd 2",
+      street_address_two: "",
+      city: city,
+      state: cstate,
+      zipcode: zipcode,
+    };
+    try {
+      await axios.post(endPoint, params).then((res) => {
+        console.log(res.data?.user_id);
+        setUser(res.data?.user_id);
+      });
+      history.push("/book");
+    } catch (error) {
+      console.log(error.response.data.error);
+      setState({ error: error.response.data.error });
+    }
+  };
+  const enable = !email.error;
+
   return (
     <Layout>
       <SectionContainer clsName="bg-blue">
@@ -88,8 +161,10 @@ const GetPolicy = () => {
             schedule an online meeting.
           </div>
         </div>
+
         <form className="form" data-aos="flip-up">
           <FormContainer clsName="review">
+            {error && <div className="error-msg">{error}</div>}
             <label className="form-label">What’s your name?</label>
             <FormInput
               type="text"
@@ -113,51 +188,21 @@ const GetPolicy = () => {
               onChange={profileChanged}
               placeholder="Phone number"
             />
-            <FormInput
+            <Input
               type="email"
               name="email"
-              value={email}
-              onChange={profileChanged}
+              value={email.value}
+              onChange={handleEmailChange}
               placeholder="Email address"
+              error={email.error}
             />
-            <label className="form-label">Where do you live?</label>
+            <label className="form-label">What is your Zip Code?</label>
             <FormInput
               type="text"
-              name="address"
-              value={address}
+              name="zipcode"
+              value={zipcode}
               onChange={profileChanged}
-              placeholder="Street address"
-            />
-            <div className="dflex">
-              <FormInput
-                type="text"
-                name="apt"
-                value={apt}
-                onChange={profileChanged}
-                placeholder="Apt/Suite"
-              />
-              <FormInput
-                type="text"
-                name="zipcode"
-                value={zipcode}
-                onChange={profileChanged}
-                placeholder="Zip code"
-              />
-            </div>
-            <FormInput
-              type="text"
-              name="city"
-              value={city}
-              onChange={profileChanged}
-              placeholder="City"
-            />
-            <FormSelect
-              type="text"
-              name="state"
-              value={cstate}
-              values={states}
-              onChange={profileChanged}
-              placeholder="State"
+              placeholder="Zip code"
             />
             <label className="form-label">Do you have life insurance?</label>
             {radioValues.map((item, idx) => (
@@ -171,10 +216,14 @@ const GetPolicy = () => {
             ))}
           </FormContainer>
           <div className="schedule-meeting">
-            <Link to="/book" className="btn-meeting">
+            <Button
+              className="btn-meeting"
+              onClick={handleSubmit}
+              disabled={!enable}
+            >
               <img src={IconCalendar} alt="calendear icon" />
               <p>Schedule a meeting</p>
-            </Link>
+            </Button>
           </div>
         </form>
       </SectionContainer>
